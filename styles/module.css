@@ -1,0 +1,24 @@
+/* Movable Countdowns Styling */
+
+/* Override system positioning constraints */
+.movable-countdowns.daggerheart.dh-style.countdowns {
+    position: fixed !important;
+    /* Managed by AppV2 */
+    /* Reset system specific "docked" positioning */
+    right: auto !important;
+    align-self: auto !important;
+    margin: 0 !important;
+    transition: none !important;
+    /* Disable system transition for sliding */
+    box-shadow: 0 0 10px #000;
+    /* Add shadow for popping out */
+}
+
+/* Ensure window header is visible/draggable */
+.movable-countdowns .window-header {
+    cursor: grab !important;
+}
+
+/* Ensure background image works if it relied on parent classes */
+/* System uses .theme-dark .daggerheart.dh-style.countdowns */
+/* If the body has theme-dark, this should still work. */

@@ -1,0 +1,33 @@
+{
+    "id": "dh-countdownsplus",
+    "title": "Daggerheart Countdowns Plus",
+    "description": "A module to allow the Daggerheart countdown tracker to be detached and moved freely.",
+    "version": "1.0.0",
+    "compatibility": {
+        "minimum": "12",
+        "verified": "12"
+    },
+    "authors": [
+        {
+            "name": "Antigravity"
+        }
+    ],
+    "relationships": {
+        "systems": [
+            {
+                "id": "daggerheart",
+                "type": "system",
+                "compatibility": {}
+            }
+        ]
+    },
+    "esmodules": [
+        "scripts/module.js"
+    ],
+    "styles": [
+        "styles/module.css"
+    ],
+    "url": "",
+    "manifest": "",
+    "download": ""
+}
