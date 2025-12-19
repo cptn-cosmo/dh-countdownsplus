@@ -22,3 +22,9 @@
 /* Ensure background image works if it relied on parent classes */
 /* System uses .theme-dark .daggerheart.dh-style.countdowns */
 /* If the body has theme-dark, this should still work. */
+
+/* Hide system tracker when detached */
+/* Exclude .movable-countdowns explicitly to prevent self-hiding if classes leak or overlap */
+body.dh-countdowns-detached .daggerheart.dh-style.countdowns.faded-ui:not(.movable-countdowns) {
+    display: none !important;
+}

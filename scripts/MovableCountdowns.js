@@ -76,8 +76,7 @@ export function createMovableCountdownsClass(BaseCountdowns) {
             // but next time it renders it will check flag.
         }
 
-        /**@inheritdoc */
-        /**@inheritdoc */
+        /** @inheritDoc */
         async _renderFrame(options) {
             const frame = await super._renderFrame(options);
 
@@ -117,6 +116,9 @@ export function createMovableCountdownsClass(BaseCountdowns) {
 
             // Ensure visibility
             this.element.hidden = false;
+
+            // Add detached class to body for CSS blocking of system tracker
+            document.body.classList.add('dh-countdowns-detached');
         }
 
         static async reattach() {
@@ -131,9 +133,12 @@ export function createMovableCountdownsClass(BaseCountdowns) {
         }
 
         /** @override */
-        /** @override */
         async close(options = {}) {
             await super.close(options);
+
+            // Remove detached class from body
+            document.body.classList.remove('dh-countdowns-detached');
+
             // Re-attach on close
             if (ui.countdowns) {
                 ui.countdowns._suppressed = false;
