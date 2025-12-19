@@ -27,13 +27,39 @@ function hookSystemCountdowns() {
     // We want to hook into the render of the system's countdown app.
     // The system app is likely a singleton at ui.countdowns.
 
+    // Patch system render to respect suppression
+    // We do this inside the hook to ensure ui.countdowns (the instance) exists and is accessible.
+    // Also, we can access 'app' directly.
+    const patchSystemTracker = (tracker) => {
+        if (tracker._patched) return;
+
+        const originalRender = tracker.render.bind(tracker);
+        tracker.render = function (options, ...args) {
+            if (this._suppressed) {
+                // Update internal state but don't show
+                // If data update, we might need to update OUR instance?
+                // Socket updates usually just call render() on ui.countdowns.
+                // We should notify Movable if it's open.
+
+                const movable = Object.values(ui.windows).find(w => w instanceof MovableCountdowns);
+                if (movable) movable.render();
+
+                // Return this to maintain chainability if system expects it
+                return this;
+            }
+            return originalRender(options, ...args);
+        };
+        tracker._patched = true;
+        console.log(`${MODULE_ID} | Patched system countdowns render method.`);
+    };
+
     // Hook on renderDhCountdowns (name of the class in system is DhCountdowns)
     Hooks.on('renderDhCountdowns', (app, html, data) => {
-        // Only inject if this is the SYSTEM one, not our movable one (ours inherits, so it might trigger this hook too?)
-        // DhCountdowns extends ApplicationV2. AppV2 emits 'renderApplicationV2' and 'renderMyClass'.
-        // So 'renderDhCountdowns' will fire for both.
-
+        // Only inject if this is the SYSTEM one
         if (app instanceof MovableCountdowns) return;
+
+        // Ensure we patched the system tracker (app is likely ui.countdowns)
+        patchSystemTracker(app);
 
         // Find the header to inject button
         // html is the HTMLElement in AppV2 hooks
@@ -72,30 +98,8 @@ function hookSystemCountdowns() {
             }
         });
 
-        // Insert before the "Close" button? System one doesn't have close button.
-        // Insert at end or specific position?
-        // System header controls: Edit, Toggle Mode.
-        // Let's prepend or append.
+        // Insert before the last item or specific location?
+        // System controls usually right aligned. 'beforeend' puts it last.
         header.insertAdjacentElement('beforeend', detachBtn);
     });
-
-    // Patch system render to respect suppression
-    if (ui.countdowns && !ui.countdowns._patched) {
-        const originalRender = ui.countdowns.render.bind(ui.countdowns);
-        ui.countdowns.render = function (options, ...args) {
-            if (this._suppressed) {
-                // Update internal state but don't show
-                // If data update, we might need to update OUR instance?
-                // But socket hooks call render() on ui.countdowns.
-                // We should notify Movable if it's open.
-
-                const movable = Object.values(ui.windows).find(w => w instanceof MovableCountdowns);
-                if (movable) movable.render();
-
-                return this;
-            }
-            return originalRender(options, ...args);
-        };
-        ui.countdowns._patched = true;
-    }
 }
